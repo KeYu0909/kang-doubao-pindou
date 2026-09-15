@@ -63,7 +63,7 @@ def init_project(a):
     require(not p.exists(),'PROJECT_EXISTS: choose a new independent work directory')
     im=open_image(a.input)
     p.mkdir(parents=True);(p/'revisions').mkdir()
-    s={'schema_version':1,'skill_version':'0.2.0','project_id':uid('p'),'created_at':time.time(),'epoch':0,'current_revision':None,'revisions':{},'operations':{},'preview_reads':{}}
+    s={'schema_version':1,'skill_version':'0.3.0','project_id':uid('p'),'created_at':time.time(),'epoch':0,'current_revision':None,'revisions':{},'operations':{},'preview_reads':{}}
     r=new_revision('edit',s);d=p/'revisions'/r['revision_id'];d.mkdir()
     # Preserve exact provided bytes and record provenance separately from normalized candidate.
     source=d/('original'+Path(a.input).suffix.lower());shutil.copyfile(a.input,source)
@@ -75,20 +75,27 @@ def init_project(a):
 
 def begin(a):
     with locked(a.project):
-        s=load(a.project);r=current(s);require(a.base==r['revision_id'],'STALE_BASE: use current revision')
+        s=load(a.project);r=current(s);require(getattr(a,'current',False) or a.base==r['revision_id'],'STALE_BASE: use current revision')
         validate_revision(a.project,r)
         if a.kind=='pixel':
             edit=r if r['kind']=='edit' else current(s,r['edit_revision'])
             require(confirmed(edit,'edit'),'EDIT_NOT_CONFIRMED')
+        require(not any(o.get('status')=='pending' and o.get('epoch')==s['epoch'] for o in s['operations'].values()),'MODIFICATION_PENDING')
         token=uid('op');source=r['files']['candidate' if r['kind']=='edit' else 'source']
-        s['operations'][token]={'operation_id':token,'kind':a.kind,'base':a.base,'epoch':s['epoch'],'status':'pending','source_sha256':source['sha256'],
+        s['operations'][token]={'operation_id':token,'kind':a.kind,'base':r['revision_id'],'epoch':s['epoch'],'status':'pending','source_sha256':source['sha256'],
             'source_path':source['path'],'request':a.request,'preserve':a.preserve or r.get('preserve',[]),'started_at':time.time(),'generative_calls':0,'retries':0,'call_mode':None}
         save(a.project,s)
         return {**s['operations'][token],'source_file':str(checked_file(a.project,source))}
 
+def select_operation(s,a):
+    if not getattr(a,'current',False):return a.operation
+    pending=[key for key,o in s['operations'].items() if o.get('status')=='pending' and o.get('epoch')==s['epoch'] and o.get('base')==s['current_revision']]
+    require(len(pending)==1,'OPERATION_REQUIRED: no single active operation')
+    return pending[0]
+
 def claim_call(a):
     with locked(a.project):
-        s=load(a.project);o=s['operations'].get(a.operation,{})
+        s=load(a.project);a.operation=select_operation(s,a);o=s['operations'].get(a.operation,{})
         require(o.get('status')=='pending' and o['epoch']==s['epoch'],'OPERATION_STALE_OR_CLOSED')
         require(o['generative_calls']==0,'CALL_LIMIT: at most one generative call per operation')
         o['generative_calls']=1;o['call_mode']=a.mode;o['claimed_at']=time.time();save(a.project,s)
@@ -102,7 +109,7 @@ def operation(s,token,kind,based_on=None):
     return o
 
 def edit(a):
-    s=snapshot(a.project);o=operation(s,a.operation,'edit',a.based_on_sha);base=current(s);validate_revision(a.project,base)
+    s=snapshot(a.project);a.operation=select_operation(s,a);o=operation(s,a.operation,'edit',a.based_on_sha);base=current(s);validate_revision(a.project,base)
     if a.input:
         require(a.based_on_sha,'SOURCE_REQUIRED: pass --based-on-sha from begin output')
         im=open_image(a.input)
@@ -125,7 +132,9 @@ def edit(a):
     return commit_revision(a.project,s,r,d,a.operation)
 
 def pixel(a):
-    s=snapshot(a.project);base=current(s);require(a.base==base['revision_id'],'STALE_BASE')
+    started=time.monotonic();timings={}
+    s=snapshot(a.project);base=current(s);require(getattr(a,'current',False) or a.base==base['revision_id'],'STALE_BASE')
+    require(not any(o.get('status')=='pending' and o.get('epoch')==s['epoch'] for o in s['operations'].values()) or a.operation,'MODIFICATION_PENDING')
     validate_revision(a.project,base)
     ed=base if base['kind']=='edit' else current(s,base['edit_revision'])
     require(confirmed(ed,'edit'),'EDIT_NOT_CONFIRMED: confirm the specific edited candidate first')
@@ -145,21 +154,82 @@ def pixel(a):
         require(o['generative_calls']==1,'CALL_RECORD_REQUIRED');source=Path(a.input);op=a.operation
         require(sha_file(source) is not None, 'PIXEL_INPUT_MISSING')
     else: require(not a.operation,'PIXEL_IMPORT: --operation requires --input')
-    im=open_image(source);g=grid_build(im,width,height,pal,cap,reserve,sampling)
+    timings['state_check']=time.monotonic()-started;t=time.monotonic()
+    from .cleanup import reduce_colors, protection, feature_colors
+    same_grid=base['kind']=='pixel' and not a.input and not a.palette and width==previous.get('width') and height==previous.get('height') and sampling==previous.get('sampling','box') and reserve==previous.get('reserve',[])
+    spec=read_json(a.protect) if getattr(a,'protect',None) else {}
+    if same_grid:
+        # Max-colors-only edits keep the current grid (including earlier cleanup), not the original photograph.
+        old=read_json(checked_file(a.project,base['files']['grid']))
+        inherited=feature_colors(old,ed.get('preserve',[]))
+        spec={**spec,'codes':list(dict.fromkeys(spec.get('codes',[])+reserve+inherited['codes']))}
+        g=reduce_colors(old,cap,spec)
+    else:
+        im=open_image(source);g=grid_build(im,width,height,pal,cap,reserve,sampling)
+    if reserve:spec={**spec,'codes':list(dict.fromkeys(spec.get('codes',[])+reserve))}
+    # Literal palette labels in recorded preserve requirements are safe to carry; semantic names need explicit mapping.
+    import re
+    known={c['code'] for c in g['palette']['colors']}
+    tags={word for text in ed.get('preserve',[]) for word in re.findall(r'[A-Za-z0-9_-]+',text)} & known
+    feature=feature_colors(g,ed.get('preserve',[]))
+    spec['codes']=list(dict.fromkeys(spec.get('codes',[])+sorted(tags)+feature['codes']))
+    spec['labels']=list(dict.fromkeys(spec.get('labels',[])+feature['labels']))
+    _,g['protection']=protection(g,spec)
+    timings['grid_processing']=time.monotonic()-t;t=time.monotonic()
     r=new_revision('pixel',s);r.update({'edit_revision':ed['revision_id'],'grid_sha256':grid_hash(g),'preserve':ed['preserve'],
         'parameters':{'width':width,'height':height,'max_colors':cap,'palette':pal['name'],'reserve':reserve,'sampling':sampling,'processing':g['processing']},
         'generative_calls':s['operations'][op]['generative_calls'] if op else 0,'input':{'source':'host-result' if op else 'confirmed-candidate','simulation':ed.get('input',{}).get('simulation',False) or bool(op and s['operations'][op]['call_mode']=='simulated')}})
-    d=staging(a.project);im.save(d/'source.png');atomic_json(d/'grid.json',g);preview(g,d/'pixel-preview.png',r['revision_id']);lightweight(d/'pixel-preview.png',d/'pixel-small.png')
+    d=staging(a.project)
+    if same_grid:shutil.copyfile(source,d/'source.png')
+    else:im.save(d/'source.png')
+    atomic_json(d/'grid.json',g);preview(g,d/'pixel-preview.png',r['revision_id']);lightweight(d/'pixel-preview.png',d/'pixel-small.png')
     png_check(g,d/'pixel-preview.png',r['revision_id'])
     r['files']={k:{'_name':name} for k,name in [('source','source.png'),('grid','grid.json'),('preview','pixel-preview.png'),('preview_small','pixel-small.png')]}
-    return commit_revision(a.project,s,r,d,op)
+    from .cleanup import analyze
+    timings['preview_render']=time.monotonic()-t;t=time.monotonic()
+    analysis=analyze(g);atomic_json(d/'analysis.json',analysis);r['files']['analysis']={'_name':'analysis.json'}
+    out=commit_revision(a.project,s,r,d,op)
+    out['analysis']={k:v for k,v in analysis.items() if k!='small_regions'}
+    timings['analysis_and_commit']=time.monotonic()-t;out['timings']=timings
+    audit(a.project,{'event':'pixel_pipeline','revision_id':r['revision_id'],'scope':'local-command-only','timings':timings})
+    return out
+
+
+def denoise(a):
+    from .cleanup import clean, analyze
+    started=time.monotonic();timings={}
+    s=snapshot(a.project);base=current(s)
+    require(getattr(a,'current',False) or a.base==base['revision_id'],'STALE_BASE')
+    require(base['kind']=='pixel','PIXEL_REQUIRED')
+    require(not s.get('pending_modification') and not any(o.get('status')=='pending' and o.get('epoch')==s['epoch'] for o in s['operations'].values()),'MODIFICATION_PENDING')
+    g=validate_revision(a.project,base)
+    extra=read_json(a.protect) if getattr(a,'protect',None) else None
+    timings['state_check']=time.monotonic()-started;t=time.monotonic()
+    out,summary=clean(g,a.mode,getattr(a,'max_colors',None),extra)
+    timings['cleanup']=time.monotonic()-t;t=time.monotonic()
+    r=new_revision('pixel',s)
+    r.update({'edit_revision':base['edit_revision'],'grid_sha256':grid_hash(out),'preserve':base.get('preserve',[]),
+              'parameters':{**base['parameters'],'max_colors':out['max_colors'],'processing':out['processing']},
+              'generative_calls':0,'input':base.get('input',{})})
+    d=staging(a.project);shutil.copyfile(checked_file(a.project,base['files']['source']),d/'source.png')
+    atomic_json(d/'grid.json',out);preview(out,d/'pixel-preview.png',r['revision_id']);lightweight(d/'pixel-preview.png',d/'pixel-small.png')
+    png_check(out,d/'pixel-preview.png',r['revision_id'])
+    analysis=analyze(out);atomic_json(d/'analysis.json',analysis)
+    r['files']={k:{'_name':n} for k,n in [('source','source.png'),('grid','grid.json'),('preview','pixel-preview.png'),('preview_small','pixel-small.png'),('analysis','analysis.json')]}
+    result=commit_revision(a.project,s,r,d)
+    timings['render_analysis_commit']=time.monotonic()-t
+    public={k:v for k,v in summary.items() if k!='changes'}
+    audit(a.project,{'event':'cleanup','mode':a.mode,'base_revision':base['revision_id'],'revision_id':r['revision_id'],**public})
+    return {**result,'timings':timings,'cleanup':public,'analysis':{k:v for k,v in analysis.items() if k!='small_regions'}}
+
 
 def confirm(a):
     require(a.message.strip(),'CONFIRMATION_MESSAGE: record the explicit user message')
     with locked(a.project):
         s=load(a.project);r=current(s,a.revision) if getattr(a,'allow_historical',False) else current(s)
-        require(a.revision==r['revision_id'],'CONFIRMATION_STALE: select exact current revision')
+        require(getattr(a,'current',False) or a.revision==r['revision_id'],'CONFIRMATION_STALE: select exact current revision')
         validate_revision(a.project,r)
+        require(not s.get('pending_modification') and not any(o.get('status')=='pending' and o.get('epoch')==s['epoch'] for o in s['operations'].values()),'MODIFICATION_PENDING')
         require((a.stage=='edit' and r['kind']=='edit') or (a.stage in ('pixel','png') and r['kind']=='pixel'),'CONFIRMATION_STAGE: mismatch')
         if a.stage=='png':require('pattern' in r['files'] and confirmed(r,'pixel'),'PNG_MISSING_OR_PIXEL_UNCONFIRMED')
         source=getattr(a,'source','explicit')
@@ -175,9 +245,11 @@ def confirm(a):
 def attach(a,kind):
     timing={};t=time.monotonic();s=snapshot(a.project)
     r=current(s,a.revision) if getattr(a,'allow_historical',False) else current(s)
-    require(a.revision==r['revision_id'],'STALE_REVISION');require(r['kind']=='pixel','PIXEL_REQUIRED')
+    require(getattr(a,'current',False) or a.revision==r['revision_id'],'STALE_REVISION');require(r['kind']=='pixel','PIXEL_REQUIRED')
     g=validate_revision(a.project,r)
-    if kind=='pattern':require(confirmed(r,'pixel'),'PIXEL_NOT_CONFIRMED')
+    if kind=='pattern':
+        require(confirmed(r,'pixel'),'PIXEL_NOT_CONFIRMED')
+        require(not s.get('pending_modification') and not any(o.get('status')=='pending' and o.get('epoch')==s['epoch'] for o in s['operations'].values()),'MODIFICATION_PENDING')
     else:
         require(confirmed(r,'png'),'PNG_NOT_CONFIRMED: confirm the displayed PNG version or use contextual route')
         require(r['confirmations']['png'].get('project_id',s['project_id'])==s['project_id'],'CONFIRMATION_PROJECT_MISMATCH')
@@ -231,13 +303,13 @@ def rollback(a):
 
 def cancel(a):
     with locked(a.project):
-        s=load(a.project);o=s['operations'].get(a.operation,{})
+        s=load(a.project);a.operation=select_operation(s,a);o=s['operations'].get(a.operation,{})
         require(o.get('status')=='pending','OPERATION_CLOSED');o['status']='cancelled';s['epoch']+=1;save(a.project,s)
     return {'operation_id':a.operation,'status':'cancelled','host_tool_interrupt':'unknown; this only rejects its later import'}
 
 def preview_result(a):
     with locked(a.project):
-        s=load(a.project);r=current(s);require(a.revision==r['revision_id'],'STALE_REVISION')
+        s=load(a.project);r=current(s);require(getattr(a,'current',False) or a.revision==r['revision_id'],'STALE_REVISION')
         key=r['revision_id']+':'+s['stage'];rec=s['preview_reads'].setdefault(key,{'attempts':0,'status':'unverified'})
         require(rec['attempts']<2 and rec['status']!='verified','PREVIEW_STOP: no more reads for this stage; visual check incomplete if failed')
         rec['attempts']+=1;rec['status']='verified' if a.outcome=='success' else 'incomplete';save(a.project,s)
@@ -263,3 +335,13 @@ def delivery(a):
         'submitted_at':a.submitted_at,'delivered_at':a.delivered_at,'quality':a.quality,'evidence':a.evidence,
         'result':'pass' if a.quality=='qualified' and seconds<=60 else ('slow' if a.quality=='qualified' else 'not-qualified')}
     require(bool(a.evidence.strip()),'DELIVERY_EVIDENCE: actual host tool record or manual observation required');audit(a.project,event);return event
+
+
+def record_stage(a):
+    require(a.ended_at>=a.started_at>0 and a.ended_at<=time.time()+5,'TIMESTAMPS: invalid stage times')
+    require(a.evidence.strip(),'TIMING_EVIDENCE_REQUIRED')
+    s=snapshot(a.project);r=current(s)
+    event={'event':'host_stage','phase':a.phase,'scope':a.scope,'revision_id':r['revision_id'],
+           'started_at':a.started_at,'ended_at':a.ended_at,'seconds':a.ended_at-a.started_at,'evidence':a.evidence,
+           'exceeds_60_seconds':a.ended_at-a.started_at>60}
+    audit(a.project,event);return event
