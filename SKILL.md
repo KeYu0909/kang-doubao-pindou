@@ -4,7 +4,7 @@ description: 将用户图片分阶段制作成真实拼豆网格、像素预览�
 license: MIT; third-party notices in licenses/
 metadata:
   author: 永康玩AI
-  version: "0.3.0"
+  version: "0.3.1"
   compatibility: Python 3.10+ on Linux/macOS (Windows via WSL), pinned dependencies and local files. Doubao native tools, durable storage and delivery must be verified on the actual host.
 ---
 
@@ -16,15 +16,17 @@ metadata:
 
 去杂色、配色、网格、PNG、CSV、PDF 等确定性任务使用固定脚本，不调用生成式 AI。只有图片理解、创意编辑和模糊用户意图需要 AI。指引全部中文，技术色号、命令、版本号保留原标识。
 
-## 首次使用：先提示持久化安装
+## 首次使用与新窗口：先确定安装和入口
 
-首次制作先简短提示：“开始前，我会检查技能、依赖和作品的保存位置。已有安装会直接复用，需要安装时优先使用宿主支持的持久目录，避免临时环境重置后反复安装。”
+首次制作前提示：“我会先检查持久化安装和新窗口入口，避免换窗口后找不到技能。”按[持久化安装](references/persistent-install.md)执行。首次安装、更新及新窗口恢复只做一次检查，正常制图不重复安装。
 
-按[持久化安装](references/persistent-install.md)检查真实路径与宿主保留范围。`/runtime`、`/tmp` 不是长期安装位置；`/home/user` 是否持久只能依据当前宿主实测，不能推广到所有账号。源码、依赖、缓存、作品放入宿主已确认的稳定目录，临时目录仅放必要链接。
+先查当前项目的 `pindou-install.json` 或项目说明中的实际安装记录，从记录的绝对路径读取本版 SKILL.md 并检查环境。找不到记录时才检查当前技能目录。`doctor` 的 `ok/READY` 仅表示当前依赖可用；必须同时读取 `storage`，不得据此宣布持久化安装成功。
 
-从已记录安装的绝对路径运行 `.venv/bin/python scripts/pindou.py doctor --repair`；已有环境直接复用，必要时仅修复缺失依赖。链接缺失可加 `--link /实际临时入口/kang-doubao-pindou`，不覆盖已有其他文件。无可用 venv 时按 README 在最终路径首次安装，不搬动旧 venv。没有宿主保留证据就说明“只能确认本会话可用”并安排项目文件备份。
+发现技能或依赖仍在 `/runtime` 等临时目录，先将完整源码安装到宿主确认保留的最终目录，在最终位置创建虚拟环境，保留原作品；不要搬动旧 venv 或只建立临时软链接。按文档用 `install_record.py record` 保存实际路径到项目文件，并让宿主在原项目的新窗口能够读取该记录。无法确定保留位置时，只说明本会话可用及备份方式，不虚构稳定路径。
 
-后续直接使用已记录的 Python 和项目路径，不重复 doctor、下载、安装、全套测试。恢复时检查真实 state.json/revisions，不凭聊天重建。普通命令自行检查状态，无需先 status→思考→执行；仅损坏排查或查历史时用 status/validate。
+**文件保留与技能入口注册分开验证。** 用宿主真实的技能安装/项目绑定入口确认可发现范围；项目文件记录和软链接都不能代替技能注册。新窗口打开同一项目，重新选择技能或读取项目安装记录，检查真实路径仍能运行后才报告已验证的范围。独立项目/新沙箱不保证共享安装；不得声称全账号永久可用。没有宿主入口能力时说明需要用户在技能界面选择或绑定。
+
+已有环境用实际 Python 和脚本绝对路径执行 `doctor --repair`，只修复必要依赖；缺临时链接可加 `--link`，但它只是当前入口。后续直接复用记录路径。恢复作品检查真实 state.json/revisions，不凭聊天重建；普通处理无需先 status 再思考再执行。
 
 ## 阶段 0：只读图，快速建议
 
