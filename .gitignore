@@ -1,0 +1,12 @@
+.venv/
+.research/
+__pycache__/
+*.pyc
+runs/
+dist/
+reports/*console*
+reports/install.log
+.env*
+.DS_Store
+
+.baseline/
