@@ -10,6 +10,20 @@ import tempfile
 import time
 
 ROOT=Path(__file__).resolve().parents[2]
+
+def temporary_path(path):
+    """Resolve entry symlinks before checking known temporary locations."""
+    actual=Path(path).expanduser().resolve()
+    roots=('/runtime','/tmp','/var/tmp','/var/folders',tempfile.gettempdir())
+    return any(actual==Path(p).resolve() or Path(p).resolve() in actual.parents for p in roots)
+
+
+def storage_status(root, prefix=None):
+    paths={'skill':str(Path(root).resolve()),'environment':str(Path(prefix or sys.prefix).resolve())}
+    temporary=[name for name,path in paths.items() if temporary_path(path)]
+    return {'paths':paths,'temporary':temporary,'cross_session_verified':False,
+            'code':'TEMPORARY_INSTALL' if temporary else 'PERSISTENCE_UNVERIFIED',
+            'message':'技能或依赖位于临时目录；请先迁移到宿主确认保留的目录，并保存项目安装记录。' if temporary else '当前路径可检查，但是否跨窗口保留及技能入口是否注册仍需宿主验证。'}
 MODULES={'numpy':'numpy','Pillow':'PIL.Image','reportlab':'reportlab.pdfgen.canvas','charset-normalizer':'charset_normalizer','pypdf':'pypdf','pypdfium2':'pypdfium2','PyYAML':'yaml'}
 
 
@@ -34,10 +48,11 @@ def check(root=None, probe=False):
         needed.extend(bad)
         errors.extend(f'{name}：无法正常导入，需要修复' for name in bad)
     return {'ok':not errors,'code':'READY' if not errors else 'DEPENDENCY_ERROR',
-            'message':'环境已就绪，可复用。' if not errors else '环境未就绪，请修复列出的依赖。',
+            'message':'本会话依赖已就绪；不代表持久化安装或跨窗口技能注册成功。' if not errors else '环境未就绪，请修复列出的依赖。',
             'python':sys.version.split()[0],'python_path':sys.executable,'skill_path':str(root.resolve()),
             'versions':versions,'errors':errors,'needed':needed,'doubao_host':'unverified',
-            'persistence':'unknown; must be verified by the host','host_interrupt':'unknown','host_timestamps':'unknown'}
+            'persistence':'unknown; must be verified by the host','storage':storage_status(root),
+            'host_interrupt':'unknown','host_timestamps':'unknown'}
 
 
 def selected_lock(root, needed):
