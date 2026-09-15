@@ -1,6 +1,20 @@
-# 永康玩AI · 拼豆助手 0.2.1
+# 永康玩AI · 拼豆助手 0.3.0
 
 正式技能名 `kang-doubao-pindou`。交互及PNG/PDF指引、CSV表头已中文化；命令和色号保留原标识。本版在原工程继续修改，保留旧项目与成品。已实现本地工作流；豆包原生导入、脚本调用和图片附件交付仍待实测。无网站、服务端、收费图片API或凭据。
+
+
+## 0.3.0：快速工作流
+
+AI理解与建议 → 固定脚本执行 → 用户阶段确认。已有项目直接读取；无需重建或重新做旧作品。
+
+- 图片刚上传先给建议，用户选择后再处理；每轮最多一次宿主图片编辑，有结果立即展示。
+- `pixel --current` 自动选当前确认素材并返回预览和本地杂色分析；无需先运行status或填写版本号。
+- `denoise --current --mode light|balanced` 本地清理；强力档必须指定 `--mode strong --max-colors 12`。支持色号/格子/区域保护。
+- `route --current`识别明确的减色、去杂色、上一版、生成PNG与自然导出；仅减色从当前网格重算，保留之前清理效果。
+- `doctor --repair`复用可用环境，只修复必要依赖；仅缺临时链接时加`--link`。不自动clone/重建venv/跑全套测试。
+- PNG单独展示并确认后，CSV/PDF各自按需生成、复用；两种PDF沿用同一网格。
+
+见[快速命令与计时](references/fast-path.md)、[三档去杂色](references/cleanup.md)、[本轮验收与限制](reports/v3-acceptance.md)。旧版低级命令仍兼容；下方完整流程展示其用法，新对话优先使用`--current`。
 
 ## 从 GitHub 同步
 
@@ -8,7 +22,7 @@
 
 ## 开始前先检查持久化安装
 
-0.2.1将持久化安装提示提前到制图之前：先检查已有安装并复用；需要安装时，源码、依赖和作品都应落到宿主实际支持的持久存储中。不要先安装进 `/runtime`，等目录清空后再补救。操作与恢复步骤见[持久化安装说明](references/persistent-install.md)。
+0.2.1起将持久化安装提示提前到制图之前：先检查已有安装并复用；需要安装时，源码、依赖和作品都应落到宿主实际支持的持久存储中。不要先安装进 `/runtime`，等目录清空后再补救。操作与恢复步骤见[持久化安装说明](references/persistent-install.md)。
 
 `/home/user/.pindou-skill/`仅在宿主明确保留该目录时适用；主目录可写或软链接存在，不代表能跨重置保存。无法核实保存范围时，应提前说明限制并安排宿主项目文件备份。
 
@@ -19,7 +33,7 @@
 ```bash
 # 替换成宿主已确认支持持久保存的实际路径
 cd /已确认的持久目录/kang-doubao-pindou
-# 已有 .venv 时先执行 doctor；通过就跳过下面两条安装命令。
+# 已有 .venv 时先执行 doctor --repair；通过就跳过下面两条安装命令。
 # 以下命令用于首次安装，不在每次制图时重复执行。
 python3 -m venv .venv
 .venv/bin/python -m pip install --require-hashes -r requirements.lock
