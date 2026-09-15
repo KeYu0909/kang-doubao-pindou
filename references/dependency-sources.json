@@ -1,0 +1,51 @@
+[
+  {
+    "name": "numpy",
+    "version": "2.2.6",
+    "license": "BSD-3-Clause; wheel includes separately licensed native components",
+    "source": "https://pypi.org/project/numpy/2.2.6/",
+    "bundled": false
+  },
+  {
+    "name": "Pillow",
+    "version": "11.3.0",
+    "license": "MIT-CMU",
+    "source": "https://pypi.org/project/Pillow/11.3.0/",
+    "bundled": false
+  },
+  {
+    "name": "reportlab",
+    "version": "4.4.3",
+    "license": "BSD-3-Clause",
+    "source": "https://pypi.org/project/reportlab/4.4.3/",
+    "bundled": false
+  },
+  {
+    "name": "charset-normalizer",
+    "version": "3.4.3",
+    "license": "MIT",
+    "source": "https://pypi.org/project/charset-normalizer/3.4.3/",
+    "bundled": false
+  },
+  {
+    "name": "pypdf",
+    "version": "6.0.0",
+    "license": "BSD-3-Clause",
+    "source": "https://pypi.org/project/pypdf/6.0.0/",
+    "bundled": false
+  },
+  {
+    "name": "pypdfium2",
+    "version": "4.30.0",
+    "license": "Apache-2.0 OR BSD-3-Clause; PDFium BSD and third-party notices",
+    "source": "https://pypi.org/project/pypdfium2/4.30.0/",
+    "bundled": false
+  },
+  {
+    "name": "PyYAML",
+    "version": "6.0.2",
+    "license": "MIT",
+    "source": "https://pypi.org/project/PyYAML/6.0.2/",
+    "bundled": false
+  }
+]
