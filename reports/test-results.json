@@ -2,10 +2,10 @@
   "scope": "local synthetic automated tests; not Doubao",
   "python": "3.12.14",
   "platform": "Darwin",
-  "tests": 80,
+  "tests": 87,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
-  "seconds": 69.614,
+  "seconds": 69.826,
   "details": []
 }
