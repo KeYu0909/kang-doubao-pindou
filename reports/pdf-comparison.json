@@ -1,0 +1,137 @@
+{
+  "scope": "local synthetic PDF/PNG only; no AI or Doubao",
+  "results": [
+    {
+      "case": "78x78",
+      "layout": "legacy",
+      "pages": 10,
+      "page_size_pt": [
+        595.2756,
+        841.8898
+      ],
+      "bytes": 75694,
+      "font_pt": 6.666666666666666,
+      "cell_pt": 18,
+      "partition": null,
+      "grid_unchanged": true,
+      "every_page_raster_checked": true,
+      "timings_seconds": {
+        "pagination": 4.169996827840805e-07,
+        "drawing": 0.16308524999840301,
+        "validation": 0.5551872920004826
+      }
+    },
+    {
+      "case": "78x78",
+      "layout": "standard",
+      "pages": 6,
+      "page_size_pt": [
+        595.2756,
+        841.8898
+      ],
+      "bytes": 114046,
+      "font_pt": 7.0,
+      "cell_pt": 13.366041,
+      "partition": [
+        2,
+        2
+      ],
+      "grid_unchanged": true,
+      "every_page_raster_checked": true,
+      "timings_seconds": {
+        "pagination": 0.0037964580005791504,
+        "drawing": 0.18335141699935775,
+        "validation": 1.1066115419998823
+      }
+    },
+    {
+      "case": "78x78",
+      "layout": "large",
+      "pages": 10,
+      "page_size_pt": [
+        841.8898,
+        595.2756
+      ],
+      "bytes": 125125,
+      "font_pt": 9.0,
+      "cell_pt": 19.689481,
+      "partition": [
+        2,
+        4
+      ],
+      "grid_unchanged": true,
+      "every_page_raster_checked": true,
+      "timings_seconds": {
+        "pagination": 0.010001499998907093,
+        "drawing": 0.191357166000671,
+        "validation": 1.2752423340025416
+      }
+    },
+    {
+      "case": "91x47-long-codes",
+      "layout": "legacy",
+      "pages": 9,
+      "page_size_pt": [
+        595.2756,
+        841.8898
+      ],
+      "bytes": 55738,
+      "font_pt": 6.666666666666666,
+      "cell_pt": 18,
+      "partition": null,
+      "grid_unchanged": true,
+      "every_page_raster_checked": true,
+      "timings_seconds": {
+        "pagination": 4.499997885432094e-06,
+        "drawing": 0.11937587500142399,
+        "validation": 0.41009987500001444
+      }
+    },
+    {
+      "case": "91x47-long-codes",
+      "layout": "standard",
+      "pages": 18,
+      "page_size_pt": [
+        841.8898,
+        595.2756
+      ],
+      "bytes": 118286,
+      "font_pt": 7.0,
+      "cell_pt": 30.736,
+      "partition": [
+        4,
+        4
+      ],
+      "grid_unchanged": true,
+      "every_page_raster_checked": true,
+      "timings_seconds": {
+        "pagination": 0.003029957999387989,
+        "drawing": 0.15164150000055088,
+        "validation": 1.2312292080023326
+      }
+    },
+    {
+      "case": "91x47-long-codes",
+      "layout": "large",
+      "pages": 38,
+      "page_size_pt": [
+        595.2756,
+        841.8898
+      ],
+      "bytes": 147318,
+      "font_pt": 9.0,
+      "cell_pt": 44.48,
+      "partition": [
+        9,
+        4
+      ],
+      "grid_unchanged": true,
+      "every_page_raster_checked": true,
+      "timings_seconds": {
+        "pagination": 0.002922125000623055,
+        "drawing": 0.15779437499804772,
+        "validation": 1.616059416999633
+      }
+    }
+  ]
+}

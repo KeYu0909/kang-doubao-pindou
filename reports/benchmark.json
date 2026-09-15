@@ -1,0 +1,355 @@
+{
+  "scope": "LOCAL SYNTHETIC ONLY; not Doubao E2E; no AI calls",
+  "input": "generated geometry, 1440x1920",
+  "baseline": "78x78, maximum 18 colors; then 12-color revision",
+  "runs": 3,
+  "samples": [
+    {
+      "run": "run-1",
+      "stage": "stage1-original-candidate",
+      "seconds": 0.4156,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {}
+    },
+    {
+      "run": "run-1",
+      "stage": "stage1-ordinary-edit",
+      "seconds": 1.6076,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {}
+    },
+    {
+      "run": "run-1",
+      "stage": "stage2-78x78-18colors",
+      "seconds": 0.3449,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {}
+    },
+    {
+      "run": "run-1",
+      "stage": "revision-12colors",
+      "seconds": 0.3451,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {}
+    },
+    {
+      "run": "run-1",
+      "stage": "stage3-png",
+      "seconds": 1.4589,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {
+        "state_check": 0.0016374160004488658,
+        "pagination": 1.6600097296759486e-07,
+        "drawing": 1.2253432079996855,
+        "validation": 0.03351408299931791,
+        "file_delivery": 0.0016308749982272275
+      }
+    },
+    {
+      "run": "run-1",
+      "stage": "export-csv",
+      "seconds": 0.2099,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {
+        "intent": 0.0018673750018933788,
+        "state_check": 3.1670024327468127e-06,
+        "confirmation": 0.003594042002077913,
+        "export_or_render": 0.010694749998947373,
+        "export_state_check": 0.0021047080008429475,
+        "pagination": 1.6700141713954508e-07,
+        "drawing": 0.0036755000000994187,
+        "validation": 0.0031891250000626314,
+        "file_delivery": 0.0012862910007243045
+      }
+    },
+    {
+      "run": "run-1",
+      "stage": "export-pdf",
+      "seconds": 1.6576,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {
+        "intent": 0.000989584001217736,
+        "state_check": 3.1669987947680056e-06,
+        "confirmation": 0.004927375000988832,
+        "export_or_render": 1.4519769170001382,
+        "export_state_check": 0.0021877500003029127,
+        "pagination": 0.003929624999727821,
+        "drawing": 0.16712762500173994,
+        "validation": 1.2763383750025241,
+        "file_delivery": 0.0014349999983096495
+      }
+    },
+    {
+      "run": "run-1",
+      "stage": "export-pdf-cached",
+      "seconds": 0.2064,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {
+        "intent": 0.0009357090020785108,
+        "state_check": 2.3329994291998446e-06,
+        "confirmation": 0.004614958001184277,
+        "export_or_render": 0.003960540998377837,
+        "export_state_check": 0.0027263750016572885
+      }
+    },
+    {
+      "run": "run-2",
+      "stage": "stage1-original-candidate",
+      "seconds": 0.2885,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {}
+    },
+    {
+      "run": "run-2",
+      "stage": "stage1-ordinary-edit",
+      "seconds": 1.5843,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {}
+    },
+    {
+      "run": "run-2",
+      "stage": "stage2-78x78-18colors",
+      "seconds": 0.3465,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {}
+    },
+    {
+      "run": "run-2",
+      "stage": "revision-12colors",
+      "seconds": 0.3484,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {}
+    },
+    {
+      "run": "run-2",
+      "stage": "stage3-png",
+      "seconds": 1.4648,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {
+        "state_check": 0.0015226670002448373,
+        "pagination": 1.66997779160738e-07,
+        "drawing": 1.2304409999997006,
+        "validation": 0.033650542001851136,
+        "file_delivery": 0.0020729589996335562
+      }
+    },
+    {
+      "run": "run-2",
+      "stage": "export-csv",
+      "seconds": 0.2109,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {
+        "intent": 0.0009876250005618203,
+        "state_check": 2.9579969123005867e-06,
+        "confirmation": 0.003871666998747969,
+        "export_or_render": 0.010080084000946954,
+        "export_state_check": 0.0021075000004202593,
+        "pagination": 2.090018824674189e-07,
+        "drawing": 0.003386042000784073,
+        "validation": 0.003100334000919247,
+        "file_delivery": 0.0010168749977310654
+      }
+    },
+    {
+      "run": "run-2",
+      "stage": "export-pdf",
+      "seconds": 1.383,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {
+        "intent": 0.0010122089988726657,
+        "state_check": 3.95800088881515e-06,
+        "confirmation": 0.004633791002561338,
+        "export_or_render": 1.1755500420003955,
+        "export_state_check": 0.002273499998409534,
+        "pagination": 0.003975999999966007,
+        "drawing": 0.16682808299810858,
+        "validation": 0.999948584001686,
+        "file_delivery": 0.001555041002575308
+      }
+    },
+    {
+      "run": "run-2",
+      "stage": "export-pdf-cached",
+      "seconds": 0.2082,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {
+        "intent": 0.0010204589998465963,
+        "state_check": 3.707998985191807e-06,
+        "confirmation": 0.005226790999586228,
+        "export_or_render": 0.003381667000212474,
+        "export_state_check": 0.0025962079998862464
+      }
+    },
+    {
+      "run": "run-3",
+      "stage": "stage1-original-candidate",
+      "seconds": 0.2895,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {}
+    },
+    {
+      "run": "run-3",
+      "stage": "stage1-ordinary-edit",
+      "seconds": 1.5798,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {}
+    },
+    {
+      "run": "run-3",
+      "stage": "stage2-78x78-18colors",
+      "seconds": 0.3596,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {}
+    },
+    {
+      "run": "run-3",
+      "stage": "revision-12colors",
+      "seconds": 0.3626,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {}
+    },
+    {
+      "run": "run-3",
+      "stage": "stage3-png",
+      "seconds": 1.4486,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {
+        "state_check": 0.0016721249994589016,
+        "pagination": 1.2500095181167126e-07,
+        "drawing": 1.216767667003296,
+        "validation": 0.03427908400044544,
+        "file_delivery": 0.0019308330010971986
+      }
+    },
+    {
+      "run": "run-3",
+      "stage": "export-csv",
+      "seconds": 0.2084,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {
+        "intent": 0.000941999998758547,
+        "state_check": 2.750002749962732e-06,
+        "confirmation": 0.004529249999905005,
+        "export_or_render": 0.009962374999304302,
+        "export_state_check": 0.002399249999143649,
+        "pagination": 1.6700141713954508e-07,
+        "drawing": 0.0032290840026689693,
+        "validation": 0.0030127079990052152,
+        "file_delivery": 0.0009412499966856558
+      }
+    },
+    {
+      "run": "run-3",
+      "stage": "export-pdf",
+      "seconds": 1.4278,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {
+        "intent": 0.0009356250011478551,
+        "state_check": 2.7079986466560513e-06,
+        "confirmation": 0.00450125000133994,
+        "export_or_render": 1.2195932079994236,
+        "export_state_check": 0.0023237920031533577,
+        "pagination": 0.004231499999150401,
+        "drawing": 0.16671004100135178,
+        "validation": 1.0437301249985467,
+        "file_delivery": 0.0015422500000568107
+      }
+    },
+    {
+      "run": "run-3",
+      "stage": "export-pdf-cached",
+      "seconds": 0.2048,
+      "local_success_under_60": true,
+      "generative_calls": 0,
+      "retries": 0,
+      "scope": "local CLI launch through JSON file delivery, includes validation",
+      "segments_seconds": {
+        "intent": 0.0010374999983469024,
+        "state_check": 3.2079988159239292e-06,
+        "confirmation": 0.004521832997852471,
+        "export_or_render": 0.003217583001969615,
+        "export_state_check": 0.0023455830014427193
+      }
+    }
+  ],
+  "host_e2e_seconds": null,
+  "host_generation_calls": null,
+  "native_tool_interrupt": "unknown",
+  "artifacts_relative_to_benchmark_directory": {
+    "project": "run-1",
+    "revision_id": "rd370c34c08e6",
+    "png": "run-1/revisions/rd370c34c08e6/pattern/pattern.png",
+    "png_preview": "run-1/revisions/rd370c34c08e6/pattern/pattern-small.png",
+    "csv": "run-1/revisions/rd370c34c08e6/csv_ca3027344a/bom.csv",
+    "pdf": "run-1/revisions/rd370c34c08e6/pdf_dd5301e2a2/pattern.pdf"
+  }
+}

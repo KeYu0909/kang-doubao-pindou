@@ -1,0 +1,11 @@
+{
+  "scope": "local synthetic automated tests; not Doubao",
+  "python": "3.12.14",
+  "platform": "Darwin",
+  "tests": 48,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "seconds": 57.936,
+  "details": []
+}
