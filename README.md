@@ -1,21 +1,26 @@
-# 永康玩AI · 拼豆助手 0.2.0
+# 永康玩AI · 拼豆助手 0.2.1
 
 正式技能名 `kang-doubao-pindou`。交互及PNG/PDF指引、CSV表头已中文化；命令和色号保留原标识。本版在原工程继续修改，保留旧项目与成品。已实现本地工作流；豆包原生导入、脚本调用和图片附件交付仍待实测。无网站、服务端、收费图片API或凭据。
 
-## 从 GitHub 导入
+## 从 GitHub 同步
 
-仓库：https://github.com/KeYu0909/kang-doubao-pindou
+仓库：https://github.com/KeYu0909/kang-doubao-pindou ，分支 `main`，技能目录为仓库根目录（留空或填 `.`）。根目录的SKILL.md与脚本、字体、色卡一起导入。原生导入与执行仍需在实际宿主核实。
 
-在技能发布页面选择“从 GitHub 导入”，填写上面的仓库地址，分支选择 `main`，技能目录选择仓库根目录（`.` 或留空）。根目录包含 `SKILL.md`，其余脚本、色卡、字体和说明与之一起导入。实际导入与脚本执行需在宿主端验收。
+## 开始前先检查持久化安装
 
-完整发布包：[下载 v0.2.0 ZIP](https://github.com/KeYu0909/kang-doubao-pindou/releases/download/v0.2.0/kang-doubao-pindou.zip)。历史 v0.2.0 标签的自动源码包只有旧分发页；同步请使用 `main`。
+0.2.1将持久化安装提示提前到制图之前：先检查已有安装并复用；需要安装时，源码、依赖和作品都应落到宿主实际支持的持久存储中。不要先安装进 `/runtime`，等目录清空后再补救。操作与恢复步骤见[持久化安装说明](references/persistent-install.md)。
+
+`/home/user/.pindou-skill/`仅在宿主明确保留该目录时适用；主目录可写或软链接存在，不代表能跨重置保存。无法核实保存范围时，应提前说明限制并安排宿主项目文件备份。
 
 ## 安装
 
-解压 `dist/kang-doubao-pindou.zip`，得到完整 `kang-doubao-pindou/`。需要 Python 3.10+、macOS/Linux（Windows用WSL），首次联网安装固定依赖，运行时不临时装包。
+先确定宿主支持的持久目录，再将发布ZIP解压到该目录，得到完整 `kang-doubao-pindou/`。需要 Python 3.10+、macOS/Linux（Windows用WSL），首次联网安装固定依赖，运行时不临时装包。
 
 ```bash
-cd /你的路径/kang-doubao-pindou
+# 替换成宿主已确认支持持久保存的实际路径
+cd /已确认的持久目录/kang-doubao-pindou
+# 已有 .venv 时先执行 doctor；通过就跳过下面两条安装命令。
+# 以下命令用于首次安装，不在每次制图时重复执行。
 python3 -m venv .venv
 .venv/bin/python -m pip install --require-hashes -r requirements.lock
 .venv/bin/python scripts/pindou.py doctor
@@ -28,7 +33,7 @@ python3 -m venv .venv
 以下 `WORK` 是用户作品目录，`EDIT_REV`、`PIXEL_REV`、消息引用都必须换成实际值；不要照抄占位确认。
 
 ```bash
-WORK=/你的路径/拼豆作品
+WORK=/已确认的持久项目目录/拼豆作品
 .venv/bin/python scripts/pindou.py init --project "$WORK" \
   --input /真实原图.png --source '本次用户上传' --request '保留主体，去掉背景'
 ```
