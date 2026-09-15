@@ -27,9 +27,14 @@ def main():
         run('create-independent-venv',[sys.executable,'-m','venv',str(skill/'.venv')])
         py=str(skill/'.venv/bin/python')
         run('first-install-separate',[py,'-m','pip','install','--require-hashes','-r','requirements.lock'])
-        run('doctor',[py,'scripts/pindou.py','doctor'])
+        run('doctor',[py,'scripts/pindou.py','doctor','--repair'])
+        run('simulate-one-missing-package',[py,'-m','pip','uninstall','-y','PyYAML'])
+        repaired=json.loads(run('minimal-repair',[py,'scripts/pindou.py','doctor','--repair']).stdout)
+        assert repaired['actions']==[{'action':'repair_dependencies','packages':['PyYAML'],'returncode':0}],repaired
+        reused=json.loads(run('healthy-repair-reuse',[py,'scripts/pindou.py','doctor','--repair']).stdout)
+        assert reused['ok'] and reused['reused'] and not reused['actions'],reused
         run('automated-tests',[py,'scripts/run_tests.py','--report',str(temp/'tests.json')])
-        run('full-synthetic-cli-stages',[py,'scripts/benchmark.py','--synthetic-confirmations','--runs','1','--out',str(temp/'synthetic-work'),'--report',str(temp/'benchmark.json')])
+        run('full-synthetic-cli-stages',[py,'scripts/fast_benchmark.py','--runs','1','--out',str(temp/'synthetic-work'),'--report',str(temp/'benchmark.json')])
         # Repack inside the clean root without relying on developer-only files.
         run('repack',[py,'scripts/package_skill.py','--out',str(temp/'repacked.zip')])
         tests=json.loads((temp/'tests.json').read_text())

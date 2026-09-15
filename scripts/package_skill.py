@@ -4,8 +4,8 @@ import argparse,hashlib,json,re,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 FILES={'SKILL.md','README.md','LICENSE','requirements.txt','requirements.lock','.gitignore'}
-TREES={'scripts':{'.py'},'tests':{'.py'},'references':{'.md','.json','.csv'},'licenses':{'.txt'},'assets':{'.json','.ttf'},'reports':{'.json','.md'}}
-REPORTS={'test-results.json','benchmark.json','development-report.md','experiment-notes.md','pdf-comparison.json'}
+TREES={'scripts':{'.py'},'tests':{'.py'},'references':{'.md','.json','.csv'},'licenses':{'.txt'},'assets':{'.json','.ttf'},'reports':{'.json','.md','.jsonl'}}
+REPORTS={'test-results.json','benchmark.json','development-report.md','experiment-notes.md','pdf-comparison.json','v3-baseline-tests.json','v3-acceptance.md','fast-path-benchmark.json','fast-path-events.jsonl'}
 
 def collect():
     paths=[ROOT/f for f in sorted(FILES)]
