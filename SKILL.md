@@ -4,7 +4,7 @@ description: 将用户图片分阶段制作成真实拼豆网格、像素预览�
 license: MIT; third-party notices in licenses/
 metadata:
   author: 永康玩AI
-  version: "0.3.1"
+  version: "0.3.2"
   compatibility: Python 3.10+ on Linux/macOS (Windows via WSL), pinned dependencies and local files. Doubao native tools, durable storage and delivery must be verified on the actual host.
 ---
 
@@ -20,13 +20,15 @@ metadata:
 
 首次制作前提示：“我会先检查持久化安装和新窗口入口，避免换窗口后找不到技能。”按[持久化安装](references/persistent-install.md)执行。首次安装、更新及新窗口恢复只做一次检查，正常制图不重复安装。
 
+豆包首次安装或升级先执行完整包根目录的 `python3 install.py`，按本次宿主约定复制到 `~/.doubao/agent_mode/workspace/.user_skills/kang-doubao-pindou/`，最终入口是其中的 `SKILL.md`。目录不存在先报告真实路径并确认宿主目录，不猜路径；其他版本只有在宿主提供实际 `.user_skills` 路径时才使用 `--skills-dir`。源码必须是真实目录，不以 `doctor --link` 或临时目录作为豆包扫描入口。安装器在最终位置建立依赖，通过后提示重启对话检查生效，不能把提示当成已实测。详细命令见 [README](README.md)。
+
 先查当前项目的 `pindou-install.json` 或项目说明中的实际安装记录，从记录的绝对路径读取本版 SKILL.md 并检查环境。找不到记录时才检查当前技能目录。`doctor` 的 `ok/READY` 仅表示当前依赖可用；必须同时读取 `storage`，不得据此宣布持久化安装成功。
 
 发现技能或依赖仍在 `/runtime` 等临时目录，先将完整源码安装到宿主确认保留的最终目录，在最终位置创建虚拟环境，保留原作品；不要搬动旧 venv 或只建立临时软链接。按文档用 `install_record.py record` 保存实际路径到项目文件，并让宿主在原项目的新窗口能够读取该记录。无法确定保留位置时，只说明本会话可用及备份方式，不虚构稳定路径。
 
 **文件保留与技能入口注册分开验证。** 用宿主真实的技能安装/项目绑定入口确认可发现范围；项目文件记录和软链接都不能代替技能注册。新窗口打开同一项目，重新选择技能或读取项目安装记录，检查真实路径仍能运行后才报告已验证的范围。独立项目/新沙箱不保证共享安装；不得声称全账号永久可用。没有宿主入口能力时说明需要用户在技能界面选择或绑定。
 
-已有环境用实际 Python 和脚本绝对路径执行 `doctor --repair`，只修复必要依赖；缺临时链接可加 `--link`，但它只是当前入口。后续直接复用记录路径。恢复作品检查真实 state.json/revisions，不凭聊天重建；普通处理无需先 status 再思考再执行。
+已有环境用实际 Python 和脚本绝对路径执行 `doctor --repair`，只修复必要依赖；`--link` 仅保留其他宿主兼容，不能用于本次豆包技能发现。后续直接复用记录路径。恢复作品检查真实 state.json/revisions，不凭聊天重建；普通处理无需先 status 再思考再执行。
 
 ## 阶段 0：只读图，快速建议
 
