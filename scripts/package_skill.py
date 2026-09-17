@@ -3,9 +3,9 @@
 import argparse,hashlib,json,re,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-FILES={'SKILL.md','README.md','LICENSE','requirements.txt','requirements.lock','.gitignore'}
+FILES={'SKILL.md','README.md','install.py','LICENSE','requirements.txt','requirements.lock','.gitignore'}
 TREES={'scripts':{'.py'},'tests':{'.py'},'references':{'.md','.json','.csv'},'licenses':{'.txt'},'assets':{'.json','.ttf'},'reports':{'.json','.md','.jsonl'}}
-REPORTS={'test-results.json','benchmark.json','development-report.md','experiment-notes.md','pdf-comparison.json','v3-baseline-tests.json','v3-acceptance.md','fast-path-benchmark.json','fast-path-events.jsonl'}
+REPORTS={'test-results.json','benchmark.json','development-report.md','experiment-notes.md','pdf-comparison.json','v3-baseline-tests.json','v3-acceptance.md','v032-acceptance.md','fast-path-benchmark.json','fast-path-events.jsonl'}
 
 def collect():
     paths=[ROOT/f for f in sorted(FILES)]
@@ -27,6 +27,7 @@ def main():
     assert re.search(r'^description: .+',front,re.M)
     paths=collect();out=Path(args.out).resolve();out.parent.mkdir(parents=True,exist_ok=True)
     manifest={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
+    (ROOT/'MANIFEST.json').write_text(json.dumps(manifest,indent=2)+'\n')
     with zipfile.ZipFile(out,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as z:
         for p in paths:z.write(p,'kang-doubao-pindou/'+str(p.relative_to(ROOT)))
         z.writestr('kang-doubao-pindou/MANIFEST.json',json.dumps(manifest,indent=2)+'\n')
